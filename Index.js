@@ -30,17 +30,11 @@ async function run() {
 
 		const database = client.db("ProductDB");
 		const productCollection = database.collection("Product");
+		const cartCollection = database.collection("Cart");
 
 		app.post("/products", async (req, res) => {
 			const user = req.body;
 			const result = await productCollection.insertOne(user);
-			console.log(user);
-            console.log(result);
-
-			// const options = { ordered: true };
-			// const result = await productCollection.insertMany(allProducts, options);
-			// console.log(`${result.insertedCount} documents were inserted`);
-
 			res.send(result);
 		});
 
@@ -85,6 +79,39 @@ async function run() {
 			);
 			res.send(result);
 		});
+
+
+
+        app.post("/Cart", async (req, res) => {
+			const user = req.body;
+			const result = await cartCollection.insertOne(user);
+			res.send(result);
+		});
+
+        app.get("/Cart", async (req, res) => {
+			const cursor = cartCollection.find();
+			const result = await cursor.toArray();
+			res.send(result);
+		}); 
+
+
+        
+        app.delete("/Card/:id" , async(req , res) =>{
+    
+            const id = req.params.id
+            // const id = req.params.id
+            // get the id which is send from clint via req.params.id
+            console.log("plese delete it from database" , id)
+			const query = { _id: id };
+            // query to select which data need to be delete if not used 
+            // all data will be deleted
+            const result = await cartCollection.deleteOne(query);
+            res.send(result)
+      
+          })
+
+
+
 
 		// Send a ping to confirm a successful connection
 		await client.db("admin").command({ ping: 1 });
